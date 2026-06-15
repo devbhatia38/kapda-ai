@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 import 'catalog/catalog_screen.dart';
 import 'customers/customer_list_screen.dart';
+import 'analytics/analytics_screen.dart';
+import 'settings/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const HomeDashboard(),
     const CatalogScreen(),
     const CustomerListScreen(),
-    const Center(child: Text('Analytics Coming Soon')),
+    const AnalyticsScreen(),
   ];
 
   @override
@@ -51,7 +53,12 @@ class HomeDashboard extends StatelessWidget {
         title: const Text('Kapda AI'),
         actions: [
           IconButton(onPressed: () {}, icon: const Icon(Icons.notifications_none)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.person_outline)),
+          IconButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            ),
+            icon: const Icon(Icons.settings_outlined),
+          ),
         ],
       ),
       body: SingleChildScrollView(

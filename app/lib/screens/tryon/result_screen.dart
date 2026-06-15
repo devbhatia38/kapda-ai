@@ -49,7 +49,7 @@ class ResultScreen extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {},
-                    icon: const Icon(Icons.whatsapp),
+                    icon: const Icon(Icons.chat),
                     label: const Text('Share to WhatsApp'),
                     style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF25D366)),
                   ),
