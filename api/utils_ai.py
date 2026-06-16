@@ -1,32 +1,30 @@
-import httpx
+from gradio_client import Client, handle_file
+import asyncio
 from config import settings
 
 async def trigger_catvton(person_image_url: str, garment_image_url: str):
     """
-    Triggers CatVTON on RunPod Serverless.
-    Expected payload for typical CatVTON implementations.
+    Triggers CatVTON using the free Hugging Face Gradio API.
+    Note: This is an async wrapper for the Gradio Client.
     """
-    url = f"https://api.runpod.ai/v2/{settings.RUNPOD_ENDPOINT_ID}/run"
-    headers = {
-        "Authorization": f"Bearer {settings.RUNPOD_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    payload = {
-        "input": {
-            "person_image": person_image_url,
-            "garment_image": garment_image_url,
-            "cloth_type": "upper_body" # Or inferred from category
-        }
-    }
-    
-    async with httpx.AsyncClient() as client:
-        response = await client.post(url, headers=headers, json=payload)
-        return response.json()
+    def _run():
+        client = Client("x0711/CatVTON")
+        result = client.predict(
+            person_img=handle_file(person_image_url),
+            cloth_img=handle_file(garment_image_url),
+            cloth_type="Upper body",
+            num_inference_steps=20,
+            guidance_scale=3.5,
+            seed=42,
+            show_type="result only",
+            api_name="/submit"
+        )
+        return result
 
-async def get_runpod_status(job_id: str):
-    url = f"https://api.runpod.ai/v2/{settings.RUNPOD_ENDPOINT_ID}/status/{job_id}"
-    headers = {"Authorization": f"Bearer {settings.RUNPOD_API_KEY}"}
+    # Run the blocking Gradio call in a thread pool
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, _run)
     
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url, headers=headers)
-        return response.json()
+    # Result from CatVTON Gradio usually returns a tuple (image_path, mask_path)
+    # or just the image path depending on 'show_type'
+    return result[0] if isinstance(result, tuple) else result

@@ -6,6 +6,7 @@ boto3
 pydantic
 pydantic-settings
 httpx
+gradio_client
 python-multipart
 python-jose[cryptography]
 passlib[bcrypt]

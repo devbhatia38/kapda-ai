@@ -95,33 +95,30 @@ async def run_tryon(
     
     garment_url = garment.data['image_url']
     
-    # 2. Trigger AI
-    job = await trigger_catvton(person_image_url, garment_url)
+    # 2. Trigger AI (Directly wait for result as Gradio space usually processes in one go)
+    try:
+        result_url = await trigger_catvton(person_image_url, garment_url)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"AI Processing failed: {str(e)}")
     
-    # 3. Create Session
+    # 3. Create Session & Save Result
     session_data = {"retailer_id": retailer_id, "customer_id": customer_id}
     session = supabase.table("tryon_sessions").insert(session_data).execute()
+    session_id = session.data[0]['id']
     
-    return {"job_id": job.get("id"), "session_id": session.data[0]['id']}
+    res_data = {
+        "session_id": session_id,
+        "garment_id": garment_id,
+        "result_url": result_url
+    }
+    supabase.table("tryon_results").insert(res_data).execute()
+    
+    return {"status": "COMPLETED", "result_url": result_url, "session_id": session_id}
 
 @app.get("/tryon/status/{job_id}")
-async def check_status(job_id: str, session_id: str, garment_id: str):
-    status = await get_runpod_status(job_id)
-    
-    if status.get("status") == "COMPLETED":
-        result_url = status['output'] # Adjust based on actual RunPod output structure
-        # Save result
-        res_data = {
-            "session_id": session_id,
-            "garment_id": garment_id,
-            "result_url": result_url
-        }
-        supabase.table("tryon_results").insert(res_data).execute()
-        
-        # Update usage log
-        # (Logic to increment tryon_count in usage_logs)
-        
-    return status
+async def check_status(job_id: str):
+    # This endpoint is kept for compatibility but Gradio is now handled synchronously in /tryon
+    return {"status": "COMPLETED", "info": "Handled synchronously"}
 
 if __name__ == "__main__":
     import uvicorn
