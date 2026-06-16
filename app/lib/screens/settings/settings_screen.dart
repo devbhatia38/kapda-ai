@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../theme.dart';
 
+import 'developer_settings_screen.dart';
+
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -30,6 +32,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: const Text('Edit shop name, address, and city'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.code, color: AppTheme.primary),
+            title: const Text('Developer Settings'),
+            subtitle: const Text('Configure your own API keys (BYOK)'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const DeveloperSettingsScreen()),
+            ),
           ),
           const Divider(),
           const Text('Preferences', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),

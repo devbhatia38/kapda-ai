@@ -32,11 +32,21 @@ async def create_garment(
     price: Optional[float] = Form(None),
     file: UploadFile = File(...)
 ):
+    # Fetch retailer keys for BYOK
+    retailer = supabase.table("retailers").select("*").eq("id", retailer_id).single().execute()
+    r_data = retailer.data or {}
+
     content = await file.read()
     file_ext = file.filename.split(".")[-1]
     file_name = f"garments/{uuid.uuid4()}.{file_ext}"
     
-    url = upload_to_r2(content, file_name, file.content_type)
+    url = upload_to_r2(
+        content, file_name, file.content_type,
+        account_id=r_data.get('r2_account_id'),
+        access_key=r_data.get('r2_access_key'),
+        secret_key=r_data.get('r2_secret_key'),
+        bucket_name=r_data.get('r2_bucket_name')
+    )
     if not url:
         raise HTTPException(status_code=500, detail="Failed to upload image")
     
@@ -64,12 +74,22 @@ async def add_customer(
     retailer_id: str = Form(...),
     file: UploadFile = File(None)
 ):
+    # Fetch retailer keys for BYOK
+    retailer = supabase.table("retailers").select("*").eq("id", retailer_id).single().execute()
+    r_data = retailer.data or {}
+
     url = None
     if file:
         content = await file.read()
         file_ext = file.filename.split(".")[-1]
         file_name = f"customers/{uuid.uuid4()}.{file_ext}"
-        url = upload_to_r2(content, file_name, file.content_type)
+        url = upload_to_r2(
+            content, file_name, file.content_type,
+            account_id=r_data.get('r2_account_id'),
+            access_key=r_data.get('r2_access_key'),
+            secret_key=r_data.get('r2_secret_key'),
+            bucket_name=r_data.get('r2_bucket_name')
+        )
     
     data = {
         "name": name,
@@ -88,16 +108,23 @@ async def run_tryon(
     person_image_url: str,
     customer_id: Optional[str] = None
 ):
-    # 1. Get garment details
+    # 1. Get retailer and garment details
+    retailer = supabase.table("retailers").select("*").eq("id", retailer_id).single().execute()
+    r_data = retailer.data or {}
+    
     garment = supabase.table("garments").select("image_url").eq("id", garment_id).single().execute()
     if not garment.data:
         raise HTTPException(status_code=404, detail="Garment not found")
     
     garment_url = garment.data['image_url']
     
-    # 2. Trigger AI (Directly wait for result as Gradio space usually processes in one go)
+    # 2. Trigger AI (Directly wait for result)
     try:
-        result_url = await trigger_catvton(person_image_url, garment_url)
+        result_url = await trigger_catvton(
+            person_image_url, 
+            garment_url, 
+            hf_token=r_data.get('hf_token')
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI Processing failed: {str(e)}")
     
