@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Plus, Search, Filter, MoreVertical, Trash2, Edit2 } from "lucide-react";
+import { Plus, Search, Filter, MoreVertical, Trash2, Edit2, ShoppingBag } from "lucide-react";
 import { createClient } from "@/utils/supabase";
 import toast from "react-hot-toast";
 
@@ -20,7 +20,7 @@ export default function GarmentsPage() {
     if (!user) return;
 
     const { data, error } = await supabase
-      .table("garments")
+      .from("garments")
       .select("*")
       .eq("retailer_id", user.id)
       .order("created_at", { ascending: false });
@@ -32,7 +32,7 @@ export default function GarmentsPage() {
 
   const deleteGarment = async (id: string) => {
     if (!confirm("Are you sure you want to delete this garment?")) return;
-    const { error } = await supabase.table("garments").delete().eq("id", id);
+    const { error } = await supabase.from("garments").delete().eq("id", id);
     if (error) toast.error("Failed to delete garment");
     else {
       toast.success("Garment deleted");

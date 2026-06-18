@@ -17,9 +17,9 @@ export default function DashboardPage() {
       if (!user) return;
 
       const [tryons, garments, customers] = await Promise.all([
-        supabase.table("usage_logs").select("tryon_count").eq("retailer_id", user.id).single(),
-        supabase.table("garments").select("id", { count: 'exact', head: true }).eq("retailer_id", user.id),
-        supabase.table("customers").select("id", { count: 'exact', head: true }).eq("retailer_id", user.id),
+        supabase.from("usage_logs").select("tryon_count").eq("retailer_id", user.id).single(),
+        supabase.from("garments").select("id", { count: 'exact', head: true }).eq("retailer_id", user.id),
+        supabase.from("customers").select("id", { count: 'exact', head: true }).eq("retailer_id", user.id),
       ]);
 
       setStats({
