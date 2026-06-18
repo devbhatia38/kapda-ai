@@ -15,8 +15,8 @@ async def trigger_catvton(person_image_url: str, garment_image_url: str, hf_toke
         result = client.predict(
             person_img=handle_file(person_image_url),
             cloth_img=handle_file(garment_image_url),
-            cloth_type="Upper body",
-            num_inference_steps=20,
+            cloth_type="Overall", # Better for Indian Traditional wear (Sarees/Lehengas)
+            num_inference_steps=40, # Higher steps = better correctness/quality
             guidance_scale=3.5,
             seed=42,
             show_type="result only",

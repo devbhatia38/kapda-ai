@@ -84,6 +84,29 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  // Demo Mode Bypass
+  Future<void> signInDemo() async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      // Mocking a user or using a test account if it exists
+      // For now, we will just allow entry to the app
+      // In a real scenario, you'd have a 'demo' account in Supabase
+      await Future.delayed(const Duration(seconds: 1));
+      _user = User(
+        id: '00000000-0000-0000-0000-000000000000', // Dummy ID
+        appMetadata: {},
+        userMetadata: {'name': 'Demo User', 'shop_name': 'Demo Boutique'},
+        aud: 'authenticated',
+        createdAt: DateTime.now().toIso8601String(),
+      );
+      notifyListeners();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> signOut() async {
     await _supabase.auth.signOut();
   }

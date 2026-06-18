@@ -91,6 +91,19 @@ class _AuthScreenState extends State<AuthScreen> {
                   },
               child: auth.isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text('Send OTP'),
             ),
+
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () async {
+                await auth.signInDemo();
+                if (mounted) {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const HomeScreen()),
+                  );
+                }
+              },
+              child: const Text('Continue in Demo Mode (Skip Login)', style: TextStyle(color: AppTheme.accent)),
+            ),
             
             const SizedBox(height: 40),
             const Text(

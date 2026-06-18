@@ -2,8 +2,10 @@
 import React, { useState } from "react";
 import { 
   Menu, X, Smartphone, CheckCircle, ArrowRight, Globe, 
-  Camera, Zap, BarChart3, Users, LayoutDashboard, Share2 
+  Camera, Zap, BarChart3, Users, LayoutDashboard, Share2, LogIn 
 } from "lucide-react";
+import TryOnPlayground from "@/components/TryOnPlayground";
+import { Toaster } from "react-hot-toast";
 
 const translations = {
   en: {
@@ -71,6 +73,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
+      <Toaster />
       {/* Navbar */}
       <nav className="flex justify-between items-center p-6 bg-white/50 backdrop-blur-md sticky top-0 z-50 border-b border-primary/5">
         <div className="text-2xl font-bold text-primary flex items-center gap-2">
@@ -78,9 +81,9 @@ export default function Home() {
           Kapda AI
         </div>
         <div className="hidden md:flex space-x-8 font-medium">
+          <a href="#demo" className="hover:text-accent transition-colors">Live Demo</a>
           <a href="#features" className="hover:text-accent transition-colors">{t.features}</a>
           <a href="#how" className="hover:text-accent transition-colors">{t.howItWorks}</a>
-          <a href="#categories" className="hover:text-accent transition-colors">{t.categories}</a>
         </div>
         <div className="flex items-center space-x-4">
           <select 
@@ -92,6 +95,9 @@ export default function Home() {
             <option value="hi">हिन्दी</option>
             <option value="gu">ગુજરાતી</option>
           </select>
+          <a href="/login" className="flex items-center gap-2 text-primary font-bold hover:text-accent transition-colors">
+            <LogIn size={20} /> Login
+          </a>
           <button className="bg-primary text-white px-4 py-2 rounded-full hidden md:block text-sm font-bold hover:shadow-lg transition-shadow">
             {t.tryOn}
           </button>
@@ -114,9 +120,9 @@ export default function Home() {
             <button className="bg-primary text-white px-8 py-4 rounded-2xl text-lg font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-all">
               <Smartphone size={20} /> {t.tryOn}
             </button>
-            <button className="border-2 border-primary/10 px-8 py-4 rounded-2xl text-lg font-bold hover:bg-primary/5 transition-all">
-              Watch Demo
-            </button>
+            <a href="#demo" className="border-2 border-primary/10 px-8 py-4 rounded-2xl text-lg font-bold hover:bg-primary/5 transition-all flex items-center justify-center">
+              Try Live Demo
+            </a>
           </div>
           <div className="flex items-center gap-4 text-sm text-foreground/60">
             <div className="flex -space-x-2">
@@ -138,6 +144,20 @@ export default function Home() {
           <div className="absolute -top-10 -right-10 w-48 h-48 bg-primary/20 rounded-full blur-3xl" />
         </div>
       </header>
+
+      {/* Demo Section */}
+      <section id="demo" className="py-24 bg-background overflow-hidden">
+        <div className="container mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
+            <h2 className="text-4xl font-bold text-primary">Experience the AI Magic</h2>
+            <p className="text-foreground/60">
+              Upload your photo below and see how you look in our sample collection. 
+              Boutique owners can upload their entire catalog!
+            </p>
+          </div>
+          <TryOnPlayground />
+        </div>
+      </section>
 
       {/* Features Grid */}
       <section id="features" className="py-24 bg-white">

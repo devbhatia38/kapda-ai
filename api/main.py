@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
 from config import settings
 from utils_r2 import upload_to_r2
-from utils_ai import trigger_catvton, get_runpod_status
+from utils_ai import trigger_catvton
+from utils_image import preprocess_image
 import uuid
 from typing import List, Optional
 
@@ -117,11 +118,24 @@ async def run_tryon(
         raise HTTPException(status_code=404, detail="Garment not found")
     
     garment_url = garment.data['image_url']
+
+    # 1.5 Preprocess Person Image (Optimization for 'Correctness')
+    # If it's a URL, we download and optimize it to 768x1024
+    preprocessed_person_bytes = preprocess_image(person_image_url)
     
+    # Temporarily save preprocessed image to pass to Gradio
+    temp_person_path = f"/tmp/person_{uuid.uuid4()}.jpg"
+    if preprocessed_person_bytes:
+        with open(temp_person_path, "wb") as f:
+            f.write(preprocessed_person_bytes)
+        input_person = temp_person_path
+    else:
+        input_person = person_image_url
+
     # 2. Trigger AI (Directly wait for result)
     try:
         result_url = await trigger_catvton(
-            person_image_url, 
+            input_person, 
             garment_url, 
             hf_token=r_data.get('hf_token')
         )
