@@ -6,7 +6,7 @@ Kapda AI is a production-ready B2B SaaS platform designed for boutique retailers
 
 This is a monorepo containing:
 - `/app`: Flutter Mobile Application (Android)
-- `/web`: Marketing Website (Next.js 14)
+- `/web`: Marketing Website (Next.js 14) - [Live Demo](https://web-chi-five-38.vercel.app)
 - `/api`: Backend API Service (FastAPI)
 - `/database`: Supabase SQL Schema scripts
 
